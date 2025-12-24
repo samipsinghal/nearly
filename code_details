@@ -1,0 +1,175 @@
+# CODE
+
+## DESCRIPTION
+
+## Folder / File Overview
+
+**Note:**  
+Large index files and raw embedding shards are excluded from version control due to size limits.
+
+---
+
+## CORE EMBEDDING AND DATA PREPARATION
+
+### File: `embed_cloud.py`
+
+**Purpose:**  
+Large-scale document embedding on GPU-backed cloud infrastructure.
+
+- Encodes the full MS MARCO passage corpus (~8.8M passages)
+- Uses `all-mpnet-base-v2` bi-encoder
+- Runs on GCP GPU instances (NVIDIA L4)
+- Uses multi-process encoding to saturate GPU and CPU resources
+- Splits embeddings into 200k-sized shards for fault tolerance
+- Uploads each shard to Google Cloud Storage (GCS)
+- Skips already-computed shards to allow resume after VM shutdown
+
+**Output:**
+- `doc_emb_*.npy` (stored in GCS, float32, L2-normalized)
+
+---
+
+### File: `embed_queries.py`
+
+**Purpose:**  
+Generate query embeddings for MS MARCO development queries.
+
+- Uses the same bi-encoder as document embeddings
+- Applies L2 normalization so cosine similarity equals inner product
+- Writes embeddings aligned with query IDs
+
+**Output:**
+- `query_emb_dev.npy`
+- `dev_query_ids.txt`
+
+---
+
+### File: `build_doc_ids.py`
+
+**Purpose:**  
+Create a mapping between FAISS internal IDs and MS MARCO document IDs.
+
+- Reads `documents.json` in the same order used during embedding
+- Required to translate FAISS search results into document IDs for qrels-based evaluation
+
+**Output:**
+- `doc_ids.txt`
+
+---
+
+## ANN INDEX CONSTRUCTION
+
+### File: `build_faiss_indexes_cloud.py`
+
+**Purpose:**  
+Build baseline ANN indices over the full corpus.
+
+- Streams document embeddings shard-by-shard to control memory usage
+- Builds multiple FAISS indices using inner product (MIPS):
+  - FlatIP (exact oracle)
+  - IVF-Flat
+  - IVF-PQ
+  - HNSW
+- Trains IVF and PQ indices on a sampled subset (1M vectors)
+- Writes metadata to ensure reproducibility
+
+**Output:**
+- FAISS index files in `indexes_full/`
+- Metadata logs in `indexes_full/logs/`
+
+---
+
+### File: `build_ivf_hnsw_ip.py`
+
+**Purpose:**  
+Build a hybrid IVF–HNSW ANN index.
+
+- Combines inverted file partitioning with graph-based HNSW search
+- Evaluates memory–latency trade-offs of hybrid designs
+- Incrementally adds all ~8.8M vectors
+- Designed to run safely under `nohup`
+
+**Output:**
+- `faiss_ivf_hnsw_ip_nlist16384_M32.index`
+- `ivf_hnsw_build.log`
+
+---
+
+## ANN EVALUATION SCRIPTS
+
+### File: `eval_faiss_three_indexes.py`
+
+**Purpose:**  
+Evaluate baseline ANN methods.
+
+- Evaluated methods:
+  - FlatIP
+  - IVF-Flat
+  - IVF-PQ
+- Computes oracle neighbors using FlatIP (cached)
+- Sweeps `nprobe` values for IVF-based indices
+
+**Measures:**
+- Recall@200
+- nDCG@10
+- MRR@10
+- MAP@100
+- Latency (p50, p95)
+- Throughput (QPS)
+
+**Output:**
+- `results_eval.csv`
+- `oracle_topk.npz`
+
+---
+
+### File: `eval_hnsw.py`
+
+**Purpose:**  
+Evaluate pure HNSW ANN search.
+
+- Sweeps `efSearch` to control search depth
+- Compares recall, ranking quality, and latency against oracle
+- Demonstrates HNSW performance on the speed–accuracy Pareto frontier
+
+**Output:**
+- `results_hnsw_eval.csv`
+
+---
+
+### File: `eval_ivf_hnsw.py`
+
+**Purpose:**  
+Evaluate hybrid IVF–HNSW ANN index.
+
+- Sweeps both:
+  - `nprobe` (IVF clusters)
+  - `efSearch` (graph traversal depth)
+- Measures interaction between coarse partitioning and graph traversal
+- Used to test whether hybrid ANN improves over pure IVF or HNSW
+
+**Output:**
+- `results_ivf_hnsw_eval.csv`
+
+---
+
+## LOGS AND CACHES
+
+### Directory: `indexes_full/logs/`
+
+**Contents:**
+Metadata describing:
+- Index parameters
+- Training size
+- Build time
+- Vector count
+
+Used for reproducibility and auditability.
+
+---
+
+### Directory: `indexes_full/eval_cache/`
+
+**Contents:**
+- `oracle_topk.npz` (cached exact nearest neighbors)
+- CSV evaluation results for all ANN methods
