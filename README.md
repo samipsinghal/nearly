@@ -1,112 +1,60 @@
 # NEARLY: NEAR-neighbor Retrieval anaLYsis
-### A ranking-centric benchmark of ANN methods for dense retrieval on MS MARCO
 
-![Python](https://img.shields.io/badge/python-3.8%2B-blue)
-![Library](https://img.shields.io/badge/library-FAISS%20%7C%20HNSWlib-orange)
-![Infrastructure](https://img.shields.io/badge/hardware-GPU%20%2B%20CPU-blueviolet)
+## A ranking-centric benchmark of ANN methods for dense retrieval on MS MARCO
 
----
 
-## 1. 🎯 What this project is
 
-**NEARLY** benchmarks multiple Approximate Nearest Neighbor (ANN) indexing methods for **dense passage retrieval** on the **MS MARCO** dataset. Unlike standard ANN benchmarks that focus solely on recall, this project prioritizes **ranking metrics** (NDCG, MRR, MAP) alongside **system metrics** (latency).
+### 1. What this project is
 
-### The Core Problem
-ANN is traditionally evaluated by **Recall@K**. However, real search systems care about the final ranking quality presented to the user. This project investigates the "Recall Fallacy":
+NEARLY is a benchmarking framework for Approximate Nearest Neighbor (ANN) methods applied to dense passage retrieval on the MS MARCO dataset.
+Unlike traditional ANN benchmarks that focus primarily on Recall@K, this project emphasizes ranking effectiveness—the quality of the final ranked list presented to users—alongside system performance metrics such as latency.
+The Core Problem
+ANN systems are often evaluated using Recall@K, which measures whether relevant items appear anywhere in the candidate set. However, real-world retrieval systems care about where relevant documents appear in the ranking.
+This project investigates the Recall Fallacy:
+Hypothesis: Higher ANN Recall@K does not necessarily imply higher ranking effectiveness (e.g., NDCG or MRR).
+NEARLY explicitly measures how ANN design choices affect end-to-end ranking quality, not just candidate recall.
 
-> **Hypothesis:** Higher ANN Recall@K does not necessarily equal higher Ranking Effectiveness (NDCG/MRR).
+### 2. Dataset & Retrieval Task
+Dataset: MS MARCO Passage Ranking
+Corpus Size: ~500,000 passages (subset used for experimentation)
+Queries: ~7,000 development queries
+Judged Queries: 3,847 queries with relevance judgments
+Embedding Model: sentence-transformers/all-mpnet-base-v2 (768 dimensions)
+Similarity Metric: Maximum Inner Product Search (MIPS)
+Implemented via cosine similarity using L2-normalized embeddings
+Only queries with relevance judgments are included in metric computation. Queries with no retrieved relevant documents contribute zero effectiveness, consistent with IR evaluation practice.
 
----
+### 3. ANN Algorithms
+Target: 8 ANN methods
 
-## 2. 📊 Dataset & Task
+Implemented
+FlatIP (Exact Baseline) — FAISS brute-force search
+HNSW (IP) — FAISS
+IVF-Flat (IP) — FAISS
+IVF-PQ (IP) — FAISS
+HNSW (IP) — hnswlib
+HNSW / SW-Graph — NMSLIB
+Annoy — Spotify (tree-based baseline)
+ScaNN — Google (quantization + scoring)
 
-* **Dataset:** MS MARCO Passage Ranking (subset)
-* **Corpus Size:** 500,000 passages
-* **Queries:** 7,000 dev queries
-* **Judged Queries:** 3,847 (subset with relevance judgments used for evaluation)
-* **Embedding Model:** `sentence-transformers/all-mpnet-base-v2` (768-d)
-* **Similarity Metric:** Maximum Inner Product Search (MIPS)
-    * *Note: Implemented as cosine similarity via L2-normalization of embeddings.*
+### 4. Evaluation Metrics
+Ranking Metrics (User-Facing Quality)
+NDCG@10 — Normalized Discounted Cumulative Gain
+MRR@10 — Mean Reciprocal Rank
+MAP@100 — Mean Average Precision
+Recall@100 / Recall@200
+Note: MS MARCO relevance judgments are sparse. Evaluation is restricted to judged queries, and failure to retrieve a relevant document yields a score of 0.0.
+System Metrics (Efficiency & Cost)
+Latency: Per-query retrieval time (milliseconds)
+Latency Percentiles: p50, p90, p95, p99
+Throughput: Queries per second (QPS)
 
----
-
-## 3. 🤖 ANN Algorithms (Target: 8)
-
-### ✅ Implemented
-1.  **FlatIP (Exact Baseline)** — FAISS (Brute force)
-2.  **HNSW (IP)** — FAISS
-3.  **IVF-Flat (IP)** — FAISS
-4.  **IVF-PQ (IP)** — FAISS
-
-### 🚧 Planned / In Progress
-5.  **HNSW (IP)** — hnswlib
-6.  **HNSW / SW-Graph** — NMSLIB
-7.  **Annoy** — Spotify (Tree/Forest baseline)
-8.  **ScaNN** — Google (Quantization + Scoring)
-
----
-
-## 4. 📉 Evaluation Metrics
-
-### Ranking Metrics (User Quality)
-* **NDCG@10:** Normalized Discounted Cumulative Gain
-* **MRR@10:** Mean Reciprocal Rank
-* **MAP@100:** Mean Average Precision
-* **Recall@100 / @200**
-
-> **Note on Judgments:** MS MARCO dev judgments are sparse. Only the 3,847 queries with known relevant documents are included in the final metric calculation. Zero retrieval is treated as **0.0 effectiveness**.
-
-### System Metrics (Infrastructure Cost)
-* **Latency:** Per-query retrieval time (ms)
-* **Percentiles:** p50, p90, p95, p99
-
----
-
-## 5. ☁️ Infrastructure Strategy
-
-To ensure reproducible and fair latency comparisons, this benchmark adopts a strict hardware strategy:
-
-* **Environment:** [e.g., Google Colab Pro / AWS g4dn.xlarge]
-* **GPU:** NVIDIA [e.g., T4 / V100] (Used for heavy indexing)
-* **CPU:** [e.g., Intel Xeon, 4 vCPUs] (Used for realistic latency simulation)
-
-**Execution Strategy:**
-1.  **Index:** Build on GPU (where supported) for speed.
-2.  **Search:** Query on CPU to simulate standard production retrieval nodes.
-
----
-
-## 6. 📜 Cloud Automation & Scripts
-
-To facilitate running this benchmark on remote cloud VMs (headless), the `scripts/` directory contains automation tools:
-
-* **`setup_vm.sh`**: One-click environment setup.
-    * Installs system dependencies (CUDA, C++ build tools).
-    * Installs Python requirements (`faiss-gpu`, `sentence-transformers`).
-    * Downloads and extracts the MS MARCO dataset and pre-computed embeddings.
-
-* **`run_batch.sh`**:
-    * Executes the full benchmark suite in the background (using `nohup`).
-    * Ensures experiments continue running even if the SSH session disconnects.
-    * Logs all `stdout`/`stderr` to `results/logs/`.
-
----
-
-## 7. 📂 Project Layout
-
-```text
-.
-├── data/                   # Dataset storage
-│   ├── corpus/             # Raw MS MARCO passages
-│   └── embeddings/         # Pre-computed .npy embedding files
-├── scripts/                # Cloud automation
-│   ├── setup_vm.sh         # Installs deps & downloads data
-│   └── run_batch.sh        # Runs experiments in background
-├── src/                    # Source code
-│   ├── algorithms/         # Wrappers for FAISS, HNSWlib, etc.
-│   ├── evaluation/         # Scoring scripts (NDCG, MRR calc)
-│   └── utils/              # Data loaders and preprocessing
-├── results/                # Output logs, CSV reports, and plots
-├── main.py                 # Entry point to run the benchmark
-├── requirements.txt        # Python dependencies
-└── README.md               # Project documentation
+### 5. Infrastructure Strategy
+To ensure fair and reproducible latency measurements, NEARLY uses a strict execution strategy:
+Environment: Cloud VM (GCP)
+GPU: NVIDIA L4 (used for embedding and index construction)
+CPU: Multi-core x86 CPU (used for search evaluation)
+Execution Model
+Index Construction: Performed on GPU (where supported) for scalability.
+Query Evaluation: Executed on CPU to simulate production retrieval nodes.
+This separation prevents GPU acceleration from artificially inflating search-time performance.
