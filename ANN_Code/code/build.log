@@ -1,0 +1,25 @@
+nohup: ignoring input
+
+========== DATA SUMMARY ==========
+Shards        : 45
+Embedding dim : 768
+Total vectors : 8,841,823
+FAISS threads : 32
+=================================
+
+✅ Found faiss_flat_ip.index, skipping
+✅ Found faiss_ivf_flat_ip_nlist16384.index, skipping
+⏳ Building faiss_hnsw_ip_M16_efC100
+  added 1,000,000 vectors | elapsed 58.4s
+  added 2,000,000 vectors | elapsed 118.6s
+  added 3,000,000 vectors | elapsed 177.9s
+  added 4,000,000 vectors | elapsed 240.1s
+  added 5,000,000 vectors | elapsed 298.8s
+  added 6,000,000 vectors | elapsed 356.4s
+  added 7,000,000 vectors | elapsed 418.2s
+  added 8,000,000 vectors | elapsed 474.8s
+📝 wrote /home/sks546/data/indexes_full/logs/faiss_hnsw_ip_M16_efC100.meta.json
+✅ Done faiss_hnsw_ip_M16_efC100
+
+🎉 All FAISS indices built successfully.
+Indices are in: /home/sks546/data/indexes_full

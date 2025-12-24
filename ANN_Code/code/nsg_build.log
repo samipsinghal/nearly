@@ -1,0 +1,19 @@
+nohup: ignoring input
+Your CPU supports instructions that this binary was not compiled to use: SSE3 SSE4.1 SSE4.2 AVX AVX2
+For maximum performance, you can install NMSLIB from sources 
+pip install --no-binary :all: nmslib
+Building NSG (L2) index
+  added 1,000,000 vectors
+  added 2,000,000 vectors
+  added 3,000,000 vectors
+  added 4,000,000 vectors
+  added 5,000,000 vectors
+  added 6,000,000 vectors
+  added 7,000,000 vectors
+  added 8,000,000 vectors
+Traceback (most recent call last):
+  File "/home/sks546/build_nsg_l2.py", line 105, in <module>
+    main()
+  File "/home/sks546/build_nsg_l2.py", line 78, in main
+    index.createIndex(
+RuntimeError: 2025-12-23 16:34:59 methodfactory.h:60 (CreateMethod) It looks like the method nsg is not defined for the distance type : FLOAT

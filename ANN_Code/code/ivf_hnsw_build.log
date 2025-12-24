@@ -1,0 +1,13 @@
+nohup: ignoring input
+WARNING clustering 500000 points to 16384 centroids: please provide at least 638976 training points
+Building IVF-HNSW index
+Training on (500000, 768)
+  added 1,000,000 vectors
+  added 2,000,000 vectors
+  added 3,000,000 vectors
+  added 4,000,000 vectors
+  added 5,000,000 vectors
+  added 6,000,000 vectors
+  added 7,000,000 vectors
+  added 8,000,000 vectors
+Done: /home/sks546/data/indexes_full/faiss_ivf_hnsw_ip_nlist16384_M32.index

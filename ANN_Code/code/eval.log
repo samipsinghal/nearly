@@ -1,0 +1,139 @@
+nohup: ignoring input
+I loaded 6,980 queries, dim=768, dtype=float32
+I loaded 8,841,823 docids (must equal corpus vectors)
+I loaded qrels for 55,578 queries
+I am computing oracle (FlatIP) topK once and caching it...
+I wrote oracle cache: /home/sks546/data/indexes_full/eval_cache/oracle_topk.npz
+I am starting sweeps...
+
+[IVF-Flat] nprobe=1
+  recall@200: 0.4196
+  nDCG@10   : 0.2349
+  MRR@10     : 0.2032
+  MAP@100     : 0.2074
+  latency p50/p95 : 0.229 / 0.268 ms
+  QPS (approx)    : 4315.9
+
+[IVF-Flat] nprobe=2
+  recall@200: 0.5497
+  nDCG@10   : 0.2843
+  MRR@10     : 0.2452
+  MAP@100     : 0.2499
+  latency p50/p95 : 0.205 / 0.227 ms
+  QPS (approx)    : 4850.2
+
+[IVF-Flat] nprobe=4
+  recall@200: 0.6562
+  nDCG@10   : 0.3188
+  MRR@10     : 0.2737
+  MAP@100     : 0.2787
+  latency p50/p95 : 0.240 / 0.265 ms
+  QPS (approx)    : 4133.1
+
+[IVF-Flat] nprobe=8
+  recall@200: 0.7407
+  nDCG@10   : 0.3414
+  MRR@10     : 0.2925
+  MAP@100     : 0.2981
+  latency p50/p95 : 0.271 / 0.336 ms
+  QPS (approx)    : 3487.9
+
+[IVF-Flat] nprobe=16
+  recall@200: 0.8049
+  nDCG@10   : 0.3581
+  MRR@10     : 0.3062
+  MAP@100     : 0.3122
+  latency p50/p95 : 0.383 / 0.398 ms
+  QPS (approx)    : 2601.6
+
+[IVF-Flat] nprobe=32
+  recall@200: 0.8555
+  nDCG@10   : 0.3681
+  MRR@10     : 0.3138
+  MAP@100     : 0.3201
+  latency p50/p95 : 0.583 / 0.607 ms
+  QPS (approx)    : 1708.8
+
+[IVF-Flat] nprobe=64
+  recall@200: 0.8950
+  nDCG@10   : 0.3746
+  MRR@10     : 0.3186
+  MAP@100     : 0.3251
+  latency p50/p95 : 0.967 / 1.011 ms
+  QPS (approx)    : 1026.7
+
+[IVF-Flat] nprobe=128
+  recall@200: 0.9265
+  nDCG@10   : 0.3824
+  MRR@10     : 0.3249
+  MAP@100     : 0.3315
+  latency p50/p95 : 1.762 / 1.827 ms
+  QPS (approx)    : 564.5
+
+[IVF-PQ] nprobe=1
+  recall@200: 0.4004
+  nDCG@10   : 0.2205
+  MRR@10     : 0.1887
+  MAP@100     : 0.1934
+  latency p50/p95 : 0.142 / 0.154 ms
+  QPS (approx)    : 6937.9
+
+[IVF-PQ] nprobe=2
+  recall@200: 0.4980
+  nDCG@10   : 0.2629
+  MRR@10     : 0.2236
+  MAP@100     : 0.2292
+  latency p50/p95 : 0.148 / 0.160 ms
+  QPS (approx)    : 6652.1
+
+[IVF-PQ] nprobe=4
+  recall@200: 0.5594
+  nDCG@10   : 0.2913
+  MRR@10     : 0.2470
+  MAP@100     : 0.2532
+  latency p50/p95 : 0.152 / 0.159 ms
+  QPS (approx)    : 6554.4
+
+[IVF-PQ] nprobe=8
+  recall@200: 0.5938
+  nDCG@10   : 0.3077
+  MRR@10     : 0.2600
+  MAP@100     : 0.2669
+  latency p50/p95 : 0.162 / 0.169 ms
+  QPS (approx)    : 6103.3
+
+[IVF-PQ] nprobe=16
+  recall@200: 0.6109
+  nDCG@10   : 0.3184
+  MRR@10     : 0.2680
+  MAP@100     : 0.2753
+  latency p50/p95 : 0.182 / 0.212 ms
+  QPS (approx)    : 5371.4
+
+[IVF-PQ] nprobe=32
+  recall@200: 0.6198
+  nDCG@10   : 0.3233
+  MRR@10     : 0.2718
+  MAP@100     : 0.2793
+  latency p50/p95 : 0.216 / 0.220 ms
+  QPS (approx)    : 4625.4
+
+[IVF-PQ] nprobe=64
+  recall@200: 0.6242
+  nDCG@10   : 0.3261
+  MRR@10     : 0.2739
+  MAP@100     : 0.2815
+  latency p50/p95 : 0.284 / 0.298 ms
+  QPS (approx)    : 3501.5
+
+[IVF-PQ] nprobe=128
+  recall@200: 0.6267
+  nDCG@10   : 0.3281
+  MRR@10     : 0.2753
+  MAP@100     : 0.2830
+  latency p50/p95 : 0.420 / 0.427 ms
+  QPS (approx)    : 2375.7
+
+I wrote results to: /home/sks546/data/indexes_full/eval_cache/results_eval.csv
+I wrote oracle cache to: /home/sks546/data/indexes_full/eval_cache/oracle_topk.npz
+Done.

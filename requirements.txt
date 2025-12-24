@@ -1,0 +1,13 @@
+ir_datasets
+sentence-transformers
+torch
+faiss-cpu
+hnswlib
+annoy
+nmslib
+ir_measures
+numpy
+pandas
+tqdm
+matplotlib
+seaborn
